@@ -1,0 +1,56 @@
+{
+  "name": "json-more",
+  "version": "0.5.1",
+  "description": "More JSON utilities for Node.js: safely stringify, strip comments, read/write with promises, etc...",
+  "author": "Onur Yıldırım <onur@cutepilot.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "build",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "babel src --out-dir build --copy-files --retain-lines --source-maps inline",
+    "release": "babel src --out-dir build --copy-files --no-comments",
+    "watch": "babel src --watch --out-dir build",
+    "pretest": "npm run build",
+    "test": "node test"
+  },
+  "homepage": "https://github.com/onury/json-more#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onury/json-more.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onury/json-more/issues"
+  },
+  "keywords": [
+    "json",
+    "javascript",
+    "object",
+    "notation",
+    "safe",
+    "stringify",
+    "parse",
+    "read-file",
+    "write-file",
+    "comments",
+    "console",
+    "log"
+  ],
+  "dependencies": {
+    "graceful-fs": "^4.1.11",
+    "json-stringify-safe": "^5.0.1",
+    "mkdirp": "^0.5.1",
+    "parse-json": "^2.2.0",
+    "strip-bom": "^3.0.0",
+    "strip-json-comments": "^2.0.1",
+    "yaku": "^0.17.8"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "jasmine": "^2.5.3",
+    "jasmine-console-reporter": "^1.2.7"
+  }
+}
