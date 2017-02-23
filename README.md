@@ -10,15 +10,81 @@ More JSON utilities for most JSON things in Node.js
 
 - Strip comments from JSON strings.
 - Safely stringify objects with circular references.
-- Read JSON files gracefully, sync or async (with promises). Strips UTF-8 BOM, throws more helpful JSON errors.
+- Read and auto-parse JSON files gracefully, sync or async (with promises).
+- Strips UTF-8 BOM, throws more helpful JSON errors.
 - Write JSON files gracefully sync or async (with promises).
-- Convenience methods for logging objects as JSON (without worrying about circular references), uglifying JSON strings and more...
+- Convenience methods for logging objects as JSON (without worrying about circular references).
+- Uglify/beautify JSON strings.
+- TypeScript support.
 
 ## Usage
 
+ES5/ES6
 ```js
-var json = require('json-more');
+const json = require('json-more');
 ```
+ES6 + Transpiler (e.g. Babel)
+```js
+import json from 'json-more';
+```
+TypeScript
+```js
+import * as json from 'json-more';
+```
+
+## Methods
+
+- [`json.beautify()`](#jsonbeautifystring--space)
+- [`json.log()`](#jsonlogargs)
+- [`json.log.pretty()`](#jsonlogargs)
+- [`json.parse()`](#jsonparsestring--reviver)
+- [`json.read()`](#jsonreadfilepath--options)
+- [`json.read.sync()`](#jsonreadsync)
+- [`json.stringify()`](#jsonstringifyvalue--replacer--space)
+- [`json.stringify.safe()`](#jsonstringifysafe)
+- [`json.stripComments()`](#jsonstripcommentsstring)
+- [`json.uglify()`](#jsonuglifystring)
+- [`json.write()`](#jsonwritefilepath-data--options)
+- [`json.write.sync()`](#jsonwritesync)
+
+_If you don't like dot-dot methods, you can use camelCase aliases. e.g. `json.stringifySafe()` instead of `json.stringify.safe()`... you get the idea._
+
+### `json.read(filePath [, options])`
+
+Asynchronously reads a JSON file, strips UTF-8 BOM and parses the JSON content and returns a `Promise`.
+
+**`options`**:_`Object|Function`_  
+Parse options or reviver function. If an `Object`, it can have the following properties:
+
+- `reviver`:_`Function`_  
+A function to filter and transform the results.
+- `stripComments`:_`Boolean`_  
+Whether to strip comments from the JSON string.
+- `whitespace`:_`Boolean`_  
+Whether to leave whitespace in place of stripped comments. This only takes effect if `stripComments` is enabled.
+
+### `json.read.sync()`
+
+Synchronous version for `json.read()`.
+
+### `json.write(filePath, data [, options])`
+
+Asynchronously writes a JSON file from the given JavaScript object and returns a `Promise`.  
+
+**`options`**:_`Object|Function`_  
+Stringify / write options or replacer function. If an `Object`, it can have the following properties:
+- `replacer`:_`Function|Array`_  
+Determines how object values are stringified for objects. It can be a function or an array of strings.
+- `space`:_`Number|String`_  
+Specifies the indentation of nested structures.
+- `autoPath`:_`Boolean|Function`_   
+Whether to create path directories if they don't exist. This will throw if set to `false` and path does not exist. Default: `true`
+- `mode`:_`Number`_  
+FileSystem permission mode to be used when writing the file. Default: `438` (`0666` in octal).
+
+### `json.write.sync()`
+
+Synchronous version for `json.write()`.
 
 ### `json.stringify(value [, replacer] [, space])`
 Outputs a JSON string from the given JavaScript object. This provides the same functionality and signature as native `JSON.stringify()`.
@@ -90,42 +156,13 @@ json.parse(str, { stripComments: true });
 // —> '{"some":"property","value":1}'
 ```
 
-### `json.read(filePath [, options])`
+### `json.uglify(string)`
 
-Asynchronously reads a JSON file, strips UTF-8 BOM and parses the JSON content and returns a `Promise`.
+Uglifies the given JSON string.
 
-**`options`**:_`Object|Function`_  
-Parse options or reviver function. If an `Object`, it can have the following properties:
+### `json.beautify(string [, space])`
 
-- `reviver`:_`Function`_  
-A function to filter and transform the results.
-- `stripComments`:_`Boolean`_  
-Whether to strip comments from the JSON string.
-- `whitespace`:_`Boolean`_  
-Whether to leave whitespace in place of stripped comments. This only takes effect if `stripComments` is enabled.
-
-### `json.read.sync()`
-
-Synchronous version for `json.read()`.
-
-### `json.write(filePath, data [, options])`
-
-Asynchronously writes a JSON file from the given JavaScript object and returns a `Promise`.  
-
-**`options`**:_`Object|Function`_  
-Stringify / write options or replacer function. If an `Object`, it can have the following properties:
-- `replacer`:_`Function|Array`_  
-Determines how object values are stringified for objects. It can be a function or an array of strings.
-- `space`:_`Number|String`_  
-Specifies the indentation of nested structures.
-- `autoPath`:_`Boolean|Function`_   
-Whether to create path directories if they don't exist. This will throw if set to `false` and path does not exist. Default: `true`
-- `mode`:_`Number`_  
-FileSystem permission mode to be used when writing the file. Default: `438` (`0666` in octal).
-
-### `json.write.sync()`
-
-Synchronous version for `json.write()`.
+Beautifies the given JSON string.
 
 ### `json.log(...args)`
 
@@ -142,21 +179,10 @@ json.error(error, otherObject);
 ```
 _Note that `.error()` logs the `.stack` property on the `Error` instance arguments, without stringifying the object._
 
-### `json.uglify(string)`
-
-Uglifies the given JSON string.
-
-### Aliases
-
-If you don't like dot-dot methods, you can use camelCase aliases:
-```js
-json.log.pretty()     /* alias —> */   json.logPretty();
-json.stringify.safe() /* alias —> */   json.stringifySafe();
-json.write.sync()     /* alias —> */   json.writeSync();
-```
-...you get the idea.
-
 ## Change Log
+
+- **v0.5.2** (2017-02-23)
+    + Added TypeScript/typings support.
 
 - **v0.5.1** (2017-02-17)
     + Fix `decycler` reference for `.stringify()` method.
