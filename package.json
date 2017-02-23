@@ -9,6 +9,7 @@
     "build",
     "LICENSE"
   ],
+  "typings": "build/json.d.ts",
   "scripts": {
     "build": "babel src --out-dir build --copy-files --retain-lines --source-maps inline",
     "release": "babel src --out-dir build --copy-files --no-comments",
@@ -26,7 +27,6 @@
   },
   "keywords": [
     "json",
-    "javascript",
     "object",
     "notation",
     "safe",
@@ -36,7 +36,10 @@
     "write-file",
     "comments",
     "console",
-    "log"
+    "log",
+    "uglify",
+    "beautify",
+    "typescript"
   ],
   "dependencies": {
     "graceful-fs": "^4.1.11",
