@@ -22,7 +22,7 @@ const promise = {
  *  JSON utility class that provides extra functionality such as stripping
  *  comments, safely parsing JSON strings with circular references, etc...
  */
-let json = {
+class json {
 
     /**
      *  Parses the given JSON string into a JavaScript object.
@@ -48,12 +48,12 @@ let json = {
      *
      *  @returns {*}
      */
-    parse(str, { reviver, stripComments = false, whitespace = true } = {}) {
+    static parse(str, { reviver, stripComments = false, whitespace = true } = {}) {
         // CAUTION: don't use arrow for this method since we use `arguments`
         if (typeof arguments[1] === 'function') reviver = arguments[1];
         if (stripComments) str = stripJsonComments(str, { whitespace });
         return parseJSON(str, reviver);
-    },
+    }
 
     /**
      *  Outputs a JSON string from the given JavaScript object.
@@ -80,9 +80,9 @@ let json = {
      *  @param {String|Number} [space]
      *         This takes effect if second argument is the `replacer` or falsy.
      *
-     *  @returns {Object}
+     *  @returns {String}
      */
-    stringify(value, options, space) {
+    static stringify(value, options, space) {
         let opts = helper.getStringifyOptions(options, space);
         let safe, decycler;
         if (opts.isObj) {
@@ -92,17 +92,34 @@ let json = {
 
         if (safe) return safeStringify(value, opts.replacer, opts.space, decycler);
         return JSON.stringify(value, opts.replacer, opts.space);
-    },
+    }
 
     /**
      *  Uglifies the given JSON string.
      *  @param {String} str - JSON string to be uglified.
      *  @returns {String}
      */
-    uglify(str) {
+    static uglify(str) {
         let o = parseJSON(stripJsonComments(str, { whitespace: false }));
         return JSON.stringify(o);
-    },
+    }
+
+    /**
+     *  Beautifies the given JSON string.
+     *  @param {String} str
+     *         JSON string to be beautified.
+     *  @param {String|Number} [space=2]
+     *         Specifies the indentation of nested structures. If it is omitted,
+     *         the text will be packed without extra whitespace. If it is a
+     *         number, it will specify the number of spaces to indent at each
+     *         level. If it is a string (such as "\t" or "&nbsp;"), it contains
+     *         the characters used to indent at each level.
+     *  @returns {String}
+     */
+    static beautify(str, space = 2) {
+        let o = parseJSON(stripJsonComments(str, { whitespace: false }));
+        return JSON.stringify(o, null, space);
+    }
 
     /**
      *  Asynchronously reads a JSON file, strips UTF-8 BOM and parses the JSON
@@ -127,7 +144,7 @@ let json = {
      *  @returns {Promise<*>}
      *           Parsed JSON content as a JavaScript object.
      */
-    read(filePath, { reviver, stripComments = false, whitespace = true } = {}) {
+    static read(filePath, { reviver, stripComments = false, whitespace = true } = {}) {
         // CAUTION: don't use arrow for this method since we use `arguments`
         if (typeof arguments[1] === 'function') reviver = arguments[1];
         return promise.readFile(filePath, 'utf8')
@@ -135,7 +152,7 @@ let json = {
                 if (stripComments) data = stripJsonComments(data, { whitespace });
                 return parseJSON(stripBOM(data), reviver, filePath);
             });
-    },
+    }
 
     /**
      *  Asynchronously writes a JSON file from the given JavaScript object.
@@ -163,7 +180,7 @@ let json = {
      *                exist.
      *  @returns {Promise<*>}
      */
-    write(filePath, data, { replacer, space, mode = 438, autoPath = true } = {}) {
+    static write(filePath, data, { replacer, space, mode = 438, autoPath = true } = {}) {
         // CAUTION: don't use arrow for this method since we use `arguments`
         if (typeof arguments[2] === 'function') replacer = arguments[2];
         return Promise.resolve()
@@ -179,7 +196,7 @@ let json = {
             });
     }
 
-};
+}
 
 // Deep methods
 
@@ -275,23 +292,7 @@ json.writeSync = json.write.sync;
 /**
  *  @private
  */
-json.writeFile = json.write;
-/**
- *  @private
- */
-json.writeFileSync = json.writeSync;
-/**
- *  @private
- */
 json.readSync = json.read.sync;
-/**
- *  @private
- */
-json.readFile = json.read;
-/**
- *  @private
- */
-json.readFileSync = json.readSync;
 
 // Export
 
