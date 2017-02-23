@@ -1,6 +1,6 @@
 {
   "name": "json-more",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "More JSON utilities for Node.js: safely stringify, strip comments, read/write with promises, etc...",
   "author": "Onur Yıldırım <onur@cutepilot.com>",
   "license": "MIT",
