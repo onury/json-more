@@ -181,11 +181,12 @@ _Note that `.error()` logs the `.stack` property on the `Error` instance argumen
 
 ## Change Log
 
-- **v0.5.2** (2017-02-23)
+- **v0.5.3** (2017-02-23)
     + Added TypeScript/typings support.
+    + Added `.beautify()` method.
 
 - **v0.5.1** (2017-02-17)
-    + Fix `decycler` reference for `.stringify()` method.
+    + Fixed `decycler` reference for `.stringify()` method.
 
 - **v0.5.0** (2017-02-16)
     + Initial release.
