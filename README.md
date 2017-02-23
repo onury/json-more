@@ -19,17 +19,8 @@ More JSON utilities for most JSON things in Node.js
 
 ## Usage
 
-ES5/ES6
 ```js
 const json = require('json-more');
-```
-ES6 + Transpiler (e.g. Babel)
-```js
-import json from 'json-more';
-```
-TypeScript
-```js
-import * as json from 'json-more';
 ```
 
 ## Methods
@@ -49,6 +40,43 @@ import * as json from 'json-more';
 
 _If you don't like dot-dot methods, you can use camelCase aliases. e.g. `json.stringifySafe()` instead of `json.stringify.safe()`... you get the idea._
 
+### `json.beautify(string [, space])`
+
+Beautifies the given JSON string.
+
+### `json.log(...args)`
+
+You can use these convenience logger methods to easily stringify and log objects. Supports `console` methods such as `log()`, `info()`, `warn()` and `error()`. These methods will automatically handle circular references; so they won't throw.
+
+```js
+json.log(object);
+// to log with indents:
+json.log.pretty(object, otherObject);
+// warning log  with indents
+json.warn.pretty(object);
+// error
+json.error(error, otherObject);
+```
+_Note that `.error()` logs the `.stack` property on the `Error` instance arguments, without stringifying the object._
+
+### `json.parse(string [, reviver])`
+
+Parses the given JSON string into a JavaScript object. This provides the same functionality and signature as native `JSON.parse()`.
+
+For some extra options you can prefer the following overload:
+
+#### `json.parse(string [, options])`  
+
+**`options`**:_`Object|Function`_  
+Parse options or reviver function. If an `Object`, it can have the following properties:
+
+- `reviver`:_`Function`_  
+A function to filter and transform the results.
+- `stripComments`:_`Boolean`_  
+Whether to strip comments from the JSON string.
+- `whitespace`:_`Boolean`_  
+Whether to leave whitespace in place of stripped comments. This only takes effect if `stripComments` is enabled.
+
 ### `json.read(filePath [, options])`
 
 Asynchronously reads a JSON file, strips UTF-8 BOM and parses the JSON content and returns a `Promise`.
@@ -66,25 +94,6 @@ Whether to leave whitespace in place of stripped comments. This only takes effec
 ### `json.read.sync()`
 
 Synchronous version for `json.read()`.
-
-### `json.write(filePath, data [, options])`
-
-Asynchronously writes a JSON file from the given JavaScript object and returns a `Promise`.  
-
-**`options`**:_`Object|Function`_  
-Stringify / write options or replacer function. If an `Object`, it can have the following properties:
-- `replacer`:_`Function|Array`_  
-Determines how object values are stringified for objects. It can be a function or an array of strings.
-- `space`:_`Number|String`_  
-Specifies the indentation of nested structures.
-- `autoPath`:_`Boolean|Function`_   
-Whether to create path directories if they don't exist. This will throw if set to `false` and path does not exist. Default: `true`
-- `mode`:_`Number`_  
-FileSystem permission mode to be used when writing the file. Default: `438` (`0666` in octal).
-
-### `json.write.sync()`
-
-Synchronous version for `json.write()`.
 
 ### `json.stringify(value [, replacer] [, space])`
 Outputs a JSON string from the given JavaScript object. This provides the same functionality and signature as native `JSON.stringify()`.
@@ -118,24 +127,6 @@ console.log(json.parse(pretty));
 
 Convenience method for `stringify()` with `safe` option enabled. You can pass a `decycler` function either within the `options` object or as the fourth argument.
 
-### `json.parse(string [, reviver])`
-
-Parses the given JSON string into a JavaScript object. This provides the same functionality and signature as native `JSON.parse()`.
-
-For some extra options you can prefer the following overload:
-
-#### `json.parse(string [, options])`  
-
-**`options`**:_`Object|Function`_  
-Parse options or reviver function. If an `Object`, it can have the following properties:
-
-- `reviver`:_`Function`_  
-A function to filter and transform the results.
-- `stripComments`:_`Boolean`_  
-Whether to strip comments from the JSON string.
-- `whitespace`:_`Boolean`_  
-Whether to leave whitespace in place of stripped comments. This only takes effect if `stripComments` is enabled.
-
 ### `json.stripComments(string)`
 
 Comments are not a part of the JSON standard. But developers tend to use comments in JSON files (such as configuration files, etc).
@@ -160,24 +151,24 @@ json.parse(str, { stripComments: true });
 
 Uglifies the given JSON string.
 
-### `json.beautify(string [, space])`
+### `json.write(filePath, data [, options])`
 
-Beautifies the given JSON string.
+Asynchronously writes a JSON file from the given JavaScript object and returns a `Promise`.  
 
-### `json.log(...args)`
+**`options`**:_`Object|Function`_  
+Stringify / write options or replacer function. If an `Object`, it can have the following properties:
+- `replacer`:_`Function|Array`_  
+Determines how object values are stringified for objects. It can be a function or an array of strings.
+- `space`:_`Number|String`_  
+Specifies the indentation of nested structures.
+- `autoPath`:_`Boolean|Function`_   
+Whether to create path directories if they don't exist. This will throw if set to `false` and path does not exist. Default: `true`
+- `mode`:_`Number`_  
+FileSystem permission mode to be used when writing the file. Default: `438` (`0666` in octal).
 
-You can use these convenience logger methods to easily stringify and log objects. Supports `console` methods such as `log()`, `info()`, `warn()` and `error()`. These methods will automatically handle circular references; so they won't throw.
+### `json.write.sync()`
 
-```js
-json.log(object);
-// to log with indents:
-json.log.pretty(object, otherObject);
-// warning log  with indents
-json.warn.pretty(object);
-// error
-json.error(error, otherObject);
-```
-_Note that `.error()` logs the `.stack` property on the `Error` instance arguments, without stringifying the object._
+Synchronous version for `json.write()`.
 
 ## Change Log
 
