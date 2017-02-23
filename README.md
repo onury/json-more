@@ -38,7 +38,8 @@ const json = require('json-more');
 - [`json.write()`](#jsonwritefilepath-data--options)
 - [`json.write.sync()`](#jsonwritesync)
 
-_If you don't like dot-dot methods, you can use camelCase aliases. e.g. `json.stringifySafe()` instead of `json.stringify.safe()`... you get the idea._
+_If you don't like dot-dot methods, you can use camelCase aliases.  
+e.g. `json.stringifySafe()` instead of `json.stringify.safe()`._
 
 ### `json.beautify(string [, space])`
 
@@ -93,7 +94,7 @@ Whether to leave whitespace in place of stripped comments. This only takes effec
 
 ### `json.read.sync()`
 
-Synchronous version for `json.read()`.
+Synchronous version of [`json.read()`](#jsonreadfilepath--options).
 
 ### `json.stringify(value [, replacer] [, space])`
 Outputs a JSON string from the given JavaScript object. This provides the same functionality and signature as native `JSON.stringify()`.
@@ -168,7 +169,7 @@ FileSystem permission mode to be used when writing the file. Default: `438` (`06
 
 ### `json.write.sync()`
 
-Synchronous version for `json.write()`.
+Synchronous version of [`json.write()`](#jsonwritefilepath-data--options).
 
 ## Change Log
 
