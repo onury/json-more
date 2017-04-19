@@ -9,7 +9,7 @@
     "build",
     "LICENSE"
   ],
-  "typings": "build/json.d.ts",
+  "types": "build/json.d.ts",
   "scripts": {
     "build": "babel src --out-dir build --copy-files --retain-lines --source-maps inline",
     "release": "babel src --out-dir build --copy-files --no-comments",

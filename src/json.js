@@ -41,18 +41,36 @@ class json {
      *                deleted.
      *         @param {Boolean} [options.stripComments=false]
      *                Whether to strip comments from the JSON string.
-     *         @param {Boolean} [options.whitespace=true]
-     *                Whether to leave whitespace in place of stripped comments.
-     *                This only takes effect if `options.stripComments` is set
-     *                to `true`.
+     *                Note that it will throw if this is set to `false` and
+     *                the string includes comments.
+     *         @param {Boolean} [options.safe=false]
+     *                Whether to safely parse within a try/catch block return an
+     *                `Error` instance if parse fails.
+     *                If `safe` option set to `true`, comments are force-removed
+     *                from the JSON string, regarless of the `stripComments`
+     *                option.
      *
-     *  @returns {*}
+     *  @returns {*|Error} - Parsed value. If `safe` option is enabled, returns an
+     *  `Error` instance.
+     *
+     *  @example
+     *  var parsed = json.parse(str, { safe: true });
+     *  if (parsed instanceof Error) {
+     *      console.log('Parse failed:', parsed);
+     *  } else {
+     *      console.log(parsed);
+     *  }
      */
-    static parse(str, { reviver, stripComments = false, whitespace = true } = {}) {
+    static parse(str, { reviver, stripComments = false, safe = false } = {}) {
         // CAUTION: don't use arrow for this method since we use `arguments`
         if (typeof arguments[1] === 'function') reviver = arguments[1];
-        if (stripComments) str = stripJsonComments(str, { whitespace });
-        return parseJSON(str, reviver);
+        if (safe || stripComments) str = stripJsonComments(str);
+        if (!safe) return parseJSON(str, reviver);
+        try {
+            return parseJSON(str, reviver);
+        } catch (err) {
+            return err;
+        }
     }
 
     /**
@@ -122,6 +140,27 @@ class json {
     }
 
     /**
+     *  Normalizes the given value by stringifying and parsing it back to a
+     *  Javascript object.
+     *  @param {*} value
+     *  @param {Object|Function|Array} [options]
+     *         A replacer or normalize options.
+     *         @param {Function|Array<String>} [options.replacer]
+     *         Determines how object values are normalized for objects. It can
+     *         be a function or an array of strings.
+     *         @param {Boolean|Function} [options.safe=false]
+     *         Specifies whether to safely normalize the given object and
+     *         return the string `"[Circular]"` for each circular reference.
+     *         You can pass a custom decycler function instead, with the
+     *         following signature: `function(k, v) { }`.
+     *
+     *  @returns {*}
+     */
+    static normalize(value, options) {
+        return json.parse(json.stringify(value, options));
+    }
+
+    /**
      *  Asynchronously reads a JSON file, strips UTF-8 BOM and parses the JSON
      *  content.
      *  @param {String} filePath
@@ -137,19 +176,18 @@ class json {
      *                deleted.
      *         @param {Boolean} [options.stripComments=false]
      *                Whether to strip comments from the JSON string.
-     *         @param {Boolean} [options.whitespace=true]
-     *                Whether to leave whitespace in place of stripped comments.
-     *                This only takes effect if `options.stripComments` is set
-     *                to `true`.
+     *                Note that it will throw if this is set to `false` and
+     *                the string includes comments.
+     *
      *  @returns {Promise<*>}
      *           Parsed JSON content as a JavaScript object.
      */
-    static read(filePath, { reviver, stripComments = false, whitespace = true } = {}) {
+    static read(filePath, { reviver, stripComments = false } = {}) {
         // CAUTION: don't use arrow for this method since we use `arguments`
         if (typeof arguments[1] === 'function') reviver = arguments[1];
         return promise.readFile(filePath, 'utf8')
             .then(data => {
-                if (stripComments) data = stripJsonComments(data, { whitespace });
+                if (stripComments) data = stripJsonComments(data);
                 return parseJSON(stripBOM(data), reviver, filePath);
             });
     }
@@ -201,6 +239,39 @@ class json {
 // Deep methods
 
 /**
+ *  Convenience method for `parse()` with `safe` option enabled.
+ *  @alias json.parseSafe
+ */
+json.parse.safe = function (str, { reviver } = {}) {
+    if (typeof arguments[1] === 'function') reviver = arguments[1];
+    return json.parse(str, { reviver, safe: true });
+};
+
+/**
+ *  Synchronously reads a JSON file, strips UTF-8 BOM and parses the JSON
+ *  content.
+ *  @alias json.readSync
+ *
+ *  @param {String} filePath
+ *         Path to JSON file.
+ *  @returns {*|Error}
+ *           Parsed JSON content as a JavaScript object.
+ *           If parse fails, returns an `Error` instance.
+ */
+json.read.sync = function (filePath, { reviver, stripComments = false, safe = false } = {}) {
+    // CAUTION: don't use arrow for this method since we use `arguments`
+    if (typeof arguments[1] === 'function') reviver = arguments[1];
+    let data = fs.readFileSync(filePath, 'utf8');
+    if (safe || stripComments) data = stripJsonComments(data);
+    if (!safe) return parseJSON(stripBOM(data), reviver, filePath);
+    try {
+        return parseJSON(stripBOM(data), reviver, filePath);
+    } catch (err) {
+        return err;
+    }
+};
+
+/**
  *  Convenience method for `stringify()` with `safe` option enabled.
  *  You can pass a `decycler` function either within the `options` object
  *  or as the fourth argument.
@@ -211,7 +282,6 @@ json.stringify.safe = (value, options, space, decycler) => {
     if (opts.isObj) {
         decycler = options.decycler || decycler;
     }
-
     return safeStringify(value, opts.replacer, opts.space, decycler);
 };
 
@@ -254,24 +324,6 @@ json.write.sync = function (filePath, data, { replacer, space, mode = 438, autoP
     });
 };
 
-/**
- *  Synchronously reads a JSON file, strips UTF-8 BOM and parses the JSON
- *  content.
- *  @alias json.readSync
- *
- *  @param {String} filePath
- *         Path to JSON file.
- *  @returns {*}
- *           Parsed JSON content as a JavaScript object.
- */
-json.read.sync = function (filePath, { reviver, stripComments = false, whitespace = true } = {}) {
-    // CAUTION: don't use arrow for this method since we use `arguments`
-    if (typeof arguments[1] === 'function') reviver = arguments[1];
-    let data = fs.readFileSync(filePath, 'utf8');
-    if (stripComments) data = stripJsonComments(data, { whitespace });
-    return parseJSON(stripBOM(data), reviver, filePath);
-};
-
 // Generate logger methods
 
 ['log', 'info', 'warn', 'error'].forEach(fn => {
@@ -281,6 +333,10 @@ json.read.sync = function (filePath, { reviver, stripComments = false, whitespac
 
 // Aliases
 
+/**
+ *  @private
+ */
+json.parseSafe = json.parse.safe;
 /**
  *  @private
  */

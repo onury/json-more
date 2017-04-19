@@ -21,7 +21,7 @@
 
     describe('json-more', function () {
 
-        let strJSON = `
+        let validJsonWithComments = `
         // comments will be stripped...
         {
             "some": /* special */ "property",
@@ -29,25 +29,59 @@
         }
         `;
 
+        let invalidJson = '[invalid JSON}';
+
         it('should throw on comments', function () {
             function throwOnComments() {
-                return json.parse(strJSON);
+                return json.parse(validJsonWithComments);
             }
             expect(throwOnComments).toThrow();
         });
 
         it('should strip comments and parse', function () {
-            let o = json.parse(strJSON, { stripComments: true });
+            let o = json.parse(validJsonWithComments, { stripComments: true });
             expect(typeof o).toEqual('object');
             expect(o.value).toEqual(1);
         });
 
+        it('should parse safe', function () {
+            expect(json.parse.safe).toEqual(json.parseSafe);
+
+            let o = json.parse(validJsonWithComments, { safe: true });
+            expect(typeof o).toEqual('object');
+            expect(o.value).toEqual(1);
+
+            o = json.parse.safe(invalidJson);
+            expect(o instanceof Error).toEqual(true);
+
+            function fn() { console.log(json.parse(invalidJson, { safe: false })); }
+            expect(fn).toThrow();
+        });
+
         it('should stringify', function () {
+            expect(json.stringifySafe).toEqual(json.stringify.safe);
+
             let o = { a: 1, b: 'text' };
             expect(typeof json.stringify(o)).toEqual('string');
-
             let s = json.stringify(o, null, 2);
             expect(s.match(/^[ ]{2}.*$/gm).length).toEqual(Object.keys(o).length);
+
+            let x = { a: 1, b: 'text'};
+            x.y = x; // circular
+            expect(function () { json.stringify(x); }).toThrow();
+            expect(typeof json.stringifySafe(x)).toEqual('string');
+            expect(typeof json.stringify.safe(x)).toEqual('string');
+        });
+
+        it('should normalize', function () {
+            function MyClass() {
+                this.a = 1;
+                this.b = 'text';
+            }
+            let mc = new MyClass();
+            let normalized = json.normalize(mc);
+            expect(mc.constructor.name).toEqual('MyClass'); // for convinience
+            expect(normalized.constructor.name).toEqual('Object');
         });
 
         it('should write/read file (async)', function (done) {
@@ -70,6 +104,9 @@
         });
 
         it('should write/read file (sync)', function () {
+            expect(json.read.sync).toEqual(json.readSync);
+            expect(json.write.sync).toEqual(json.writeSync);
+
             let filePath = './test/tmp/test-sync.json';
             let data = { test: 'file' };
             json.write.sync(filePath, data);
