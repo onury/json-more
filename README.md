@@ -1,6 +1,12 @@
 # json-more
 
-> © 2017, Onur Yıldırım (@onury). MIT License.
+[![npm](http://img.shields.io/npm/v/json-more.svg)](https://www.npmjs.com/package/json-more)
+[![release](https://img.shields.io/github/release/onury/json-more.svg)](https://github.com/onury/json-more)
+[![dependencies](https://david-dm.org/onury/json-more.svg)](https://david-dm.org/onury/json-more)
+[![license](http://img.shields.io/npm/l/json-more.svg)](https://github.com/onury/json-more/blob/master/LICENSE)
+[![maintained](https://img.shields.io/maintenance/yes/2017.svg)](https://github.com/onury/json-more/graphs/punch-card)  
+
+> © 2017, Onur Yıldırım ([@onury](https://github.com/onury)). MIT License.
 
 More JSON utilities for most JSON things in Node.js  
 
