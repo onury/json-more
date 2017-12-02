@@ -208,6 +208,9 @@ FileSystem permission mode to be used when writing the file. Default: `438` (`06
 
 ## Change Log
 
+- **v0.6.1** (2017-12-03)
+    + Dependency updates.
+
 - **v0.6.0** (2017-04-19)
     + Added `.normalize()` method.
     + Added `.parseSafe()`, `.parse.safe()` methods.
