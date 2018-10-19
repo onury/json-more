@@ -1,7 +1,9 @@
 # json-more
 
-:warning: **DEPRECATED**!  
+## :warning: **DEPRECATED**!  
 Use [**`jsonc`**](https://github.com/onury/jsonc) instead. Better implementation, better API.
+
+---
 
 > © 2018, Onur Yıldırım ([@onury](https://github.com/onury)). MIT License.
 
